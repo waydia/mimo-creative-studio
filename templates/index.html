@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiMo Creative Studio</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <span class="logo-text">MiMo Studio</span>
+            </div>
+            <nav class="nav">
+                <button class="nav-item active" data-tab="chat" onclick="switchTab('chat')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>AI Chat</span>
+                </button>
+                <button class="nav-item" data-tab="image" onclick="switchTab('image')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Image Analysis</span>
+                </button>
+                <button class="nav-item" data-tab="code" onclick="switchTab('code')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    <span>Code Assistant</span>
+                </button>
+                <button class="nav-item" data-tab="tts" onclick="switchTab('tts')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                    <span>Voice Synthesis</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="model-badge">Powered by MiMo V2.5</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Chat Tab -->
+            <div id="tab-chat" class="tab-content active">
+                <div class="tab-header">
+                    <h1>AI Chat</h1>
+                    <p>Chat with MiMo-V2.5-Pro — advanced reasoning & text generation</p>
+                </div>
+                <div class="chat-container">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="welcome-message">
+                            <div class="welcome-icon">M</div>
+                            <h2>Hello! I'm MiMo</h2>
+                            <p>I'm powered by Xiaomi MiMo-V2.5-Pro. Ask me anything — coding, analysis, creative writing, and more.</p>
+                            <div class="suggestions">
+                                <button onclick="sendSuggestion('Explain quantum computing in simple terms')">Explain quantum computing</button>
+                                <button onclick="sendSuggestion('Write a Python function to find prime numbers')">Write prime number finder</button>
+                                <button onclick="sendSuggestion('Help me plan a mobile app architecture')">Plan app architecture</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <div class="input-wrapper">
+                            <textarea id="chat-input" placeholder="Type your message..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+                            <button id="chat-send" onclick="sendChat()" class="send-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Analysis Tab -->
+            <div id="tab-image" class="tab-content">
+                <div class="tab-header">
+                    <h1>Image Analysis</h1>
+                    <p>Upload an image for MiMo-V2.5 multimodal understanding</p>
+                </div>
+                <div class="panel-layout">
+                    <div class="panel">
+                        <h3>Upload Image</h3>
+                        <div id="drop-zone" class="drop-zone" onclick="document.getElementById('image-input').click()">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <p>Click or drag & drop an image</p>
+                            <span>Supports JPG, PNG, WebP</span>
+                        </div>
+                        <input type="file" id="image-input" accept="image/*" hidden onchange="previewImage(this)">
+                        <img id="image-preview" class="image-preview" hidden>
+                        <div class="form-group">
+                            <label for="image-prompt">Analysis Prompt</label>
+                            <textarea id="image-prompt" rows="3" placeholder="Describe this image in detail...">Describe this image in detail. Identify key objects, colors, composition, and any text visible.</textarea>
+                        </div>
+                        <button onclick="analyzeImage()" class="btn-primary" id="analyze-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            Analyze Image
+                        </button>
+                    </div>
+                    <div class="panel">
+                        <h3>Analysis Result</h3>
+                        <div id="image-result" class="result-area">
+                            <p class="placeholder-text">Upload an image and click "Analyze" to see the result here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Assistant Tab -->
+            <div id="tab-code" class="tab-content">
+                <div class="tab-header">
+                    <h1>Code Assistant</h1>
+                    <p>Review, explain, optimize, or generate tests with MiMo-V2.5-Pro</p>
+                </div>
+                <div class="panel-layout">
+                    <div class="panel">
+                        <h3>Your Code</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="code-lang">Language</label>
+                                <select id="code-lang">
+                                    <option value="python">Python</option>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="typescript">TypeScript</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                    <option value="go">Go</option>
+                                    <option value="rust">Rust</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="code-action">Action</label>
+                                <select id="code-action">
+                                    <option value="review">Review Code</option>
+                                    <option value="explain">Explain Code</option>
+                                    <option value="optimize">Optimize Code</option>
+                                    <option value="test">Generate Tests</option>
+                                    <option value="convert">Convert to Python</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="code-input">Paste your code</label>
+                            <textarea id="code-input" class="code-textarea" rows="15" placeholder="Paste your code here..."># Example: A simple sorting function
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr</textarea>
+                        </div>
+                        <button onclick="processCode()" class="btn-primary" id="code-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                            Process Code
+                        </button>
+                    </div>
+                    <div class="panel">
+                        <h3>Result</h3>
+                        <div id="code-result" class="result-area">
+                            <p class="placeholder-text">Paste your code and select an action to see the result here.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TTS Tab -->
+            <div id="tab-tts" class="tab-content">
+                <div class="tab-header">
+                    <h1>Voice Synthesis</h1>
+                    <p>Convert text to natural speech with MiMo-V2.5-TTS</p>
+                </div>
+                <div class="tts-container">
+                    <div class="panel" style="max-width: 700px; margin: 0 auto;">
+                        <h3>Text to Speech</h3>
+                        <div class="form-group">
+                            <label for="tts-text">Enter text to synthesize</label>
+                            <textarea id="tts-text" rows="6" placeholder="Type or paste the text you want to convert to speech...">Hello! Welcome to MiMo Creative Studio. I'm an AI assistant powered by Xiaomi MiMo technology, ready to help you with creative tasks.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="tts-voice">Voice</label>
+                            <select id="tts-voice">
+                                <option value="narrator">Narrator</option>
+                                <option value="alloy">Alloy</option>
+                                <option value="echo">Echo</option>
+                                <option value="fable">Fable</option>
+                                <option value="onyx">Onyx</option>
+                                <option value="nova">Nova</option>
+                                <option value="shimmer">Shimmer</option>
+                            </select>
+                        </div>
+                        <button onclick="synthesizeSpeech()" class="btn-primary" id="tts-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            Generate Speech
+                        </button>
+                        <div id="tts-result" class="tts-result" hidden>
+                            <h3>Generated Audio</h3>
+                            <audio id="tts-audio" controls></audio>
+                            <a id="tts-download" class="btn-secondary" download="mimo-speech.mp3">Download MP3</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
